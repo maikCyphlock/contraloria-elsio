@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# SQLite database (data local, not committed)
+contraloria.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
