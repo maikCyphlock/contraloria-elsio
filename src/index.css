@@ -608,6 +608,29 @@ input:focus, select:focus, textarea:focus {
 .site-footer strong { color: rgba(255,255,255,0.9); }
 .site-footer .footer-sub { opacity: 0.5; margin-top: 4px; font-size: 0.75rem; }
 
+/* ─── Print ──────────────────────────────────────────── */
+@media print {
+  .no-print { display: none !important; }
+  .header-banner { display: none !important; }
+  .site-footer { display: none !important; }
+
+  body { background: white; }
+  .container { margin: 0; padding: 0; max-width: 100%; }
+  .app-wrapper { min-height: unset; }
+
+  .premium-card { box-shadow: none; border: 1px solid #ccc; }
+  .premium-card-header {
+    background: none !important;
+    color: var(--navy) !important;
+    border-bottom: 2px solid var(--navy);
+    padding: 0.75rem 1.25rem;
+  }
+  .premium-card-header h2,
+  .premium-card-header p { color: var(--navy) !important; }
+
+  .animate-fade { animation: none; }
+}
+
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 768px) {
   .header-banner {
