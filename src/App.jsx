@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getComplaints, createComplaint, updateComplaint, patchComplaintStatus, deleteComplaint } from './data/api';
 import AdminPage from './components/admin/AdminPage';
+import ComplaintDetailPage from './components/admin/ComplaintDetailPage';
 import ComplaintFormPage from './components/form/ComplaintFormPage';
 import Footer from './components/layout/Footer';
 import Header from './components/layout/Header';
@@ -16,6 +17,7 @@ function App() {
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [notification, setNotification] = useState(null);
   const [form, setForm] = useState(getEmptyForm());
+  const [viewingComplaint, setViewingComplaint] = useState(null);
 
   useEffect(() => {
     getComplaints().then(setComplaints).catch(() => showNotification('Error cargando datos desde la base de datos.'));
@@ -221,9 +223,17 @@ function App() {
           onClearSearch={() => setSearchQuery('')}
           onReport={() => setCurrentView('report')}
           onAdd={goRegister}
+          onView={c => { setViewingComplaint(c); setCurrentView('detail'); }}
           onEdit={startEdit}
           onDelete={handleDeleteComplaint}
           onToggleStatus={toggleStatus}
+        />
+      )}
+
+      {currentView === 'detail' && (
+        <ComplaintDetailPage
+          complaint={viewingComplaint}
+          onClose={() => setCurrentView('admin')}
         />
       )}
 

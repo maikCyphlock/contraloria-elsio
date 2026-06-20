@@ -2,7 +2,7 @@ import { Download, PlusCircle } from 'lucide-react';
 import SearchBox from './SearchBox';
 import ComplaintTable from './ComplaintTable';
 
-function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onReport, onAdd, onEdit, onDelete, onToggleStatus }) {
+function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onReport, onAdd, onEdit, onDelete, onToggleStatus, onView }) {
   return (
     <main className="container animate-fade">
       <div className="premium-card">
@@ -27,6 +27,7 @@ function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onR
           <SearchBox value={searchQuery} onChange={onSearchChange} onClear={onClearSearch} />
           <ComplaintTable
             complaints={complaints}
+            onView={onView}
             onEdit={onEdit}
             onDelete={onDelete}
             onToggleStatus={onToggleStatus}

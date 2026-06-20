@@ -1,4 +1,4 @@
-import { Edit3, FileText, Trash2 } from 'lucide-react';
+import { Edit3, Eye, FileText, Trash2 } from 'lucide-react';
 
 const TYPE_CLASS = {
   denuncia: 'tag-denuncia',
@@ -7,7 +7,7 @@ const TYPE_CLASS = {
   peticion: 'tag-peticion',
 };
 
-function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus }) {
+function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }) {
   if (complaints.length === 0) {
     return (
       <div className="empty-state">
@@ -77,6 +77,9 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus }) {
               </td>
               <td>
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => onView(c)} className="btn btn-ghost" style={{ padding: '6px 10px', color: 'var(--blue-mid)' }} title="Ver detalle">
+                    <Eye size={14} />
+                  </button>
                   <button onClick={() => onEdit(c)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Editar">
                     <Edit3 size={14} />
                   </button>
