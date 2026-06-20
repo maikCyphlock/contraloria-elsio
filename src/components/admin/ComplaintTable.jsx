@@ -1,4 +1,5 @@
-import { Edit3, Eye, FileText, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Edit3, Eye, FileText, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 
 const TYPE_CLASS = {
   denuncia: 'tag-denuncia',
@@ -7,8 +8,54 @@ const TYPE_CLASS = {
   peticion: 'tag-peticion',
 };
 
+const COLUMNS = [
+  { key: 'id',        label: 'Expediente' },
+  { key: 'fecha',     label: 'Fecha' },
+  { key: 'tipo',      label: 'Tipo' },
+  { key: 'nombre',    label: 'Solicitante' },
+  { key: 'senalado',  label: 'Señalado / Instancia', noSort: true },
+  { key: 'estado',    label: 'Estado' },
+];
+
+function getSortValue(c, key) {
+  if (key === 'id')     return c.id;
+  if (key === 'fecha')  return c.fecha;
+  if (key === 'tipo')   return c.tipo_tramite;
+  if (key === 'nombre') return c.solicitante.nombres;
+  if (key === 'estado') return c.estado;
+  return '';
+}
+
+function SortIcon({ col, sortCol, sortDir }) {
+  if (col.noSort) return null;
+  if (sortCol !== col.key) return <ChevronsUpDown size={12} style={{ opacity: 0.35, marginLeft: 4 }} />;
+  return sortDir === 'asc'
+    ? <ChevronUp size={12} style={{ marginLeft: 4, color: 'var(--accent)' }} />
+    : <ChevronDown size={12} style={{ marginLeft: 4, color: 'var(--accent)' }} />;
+}
+
 function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }) {
-  if (complaints.length === 0) {
+  const [sortCol, setSortCol] = useState('fecha');
+  const [sortDir, setSortDir] = useState('desc');
+
+  function handleSort(col) {
+    if (col.noSort) return;
+    if (sortCol === col.key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortCol(col.key);
+      setSortDir('asc');
+    }
+  }
+
+  const sorted = [...complaints].sort((a, b) => {
+    const va = getSortValue(a, sortCol);
+    const vb = getSortValue(b, sortCol);
+    const cmp = va.localeCompare(vb, 'es', { sensitivity: 'base' });
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  if (sorted.length === 0) {
     return (
       <div className="empty-state">
         <div className="empty-state-icon">
@@ -24,18 +71,25 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }
       <table className="premium-table">
         <thead>
           <tr>
-            <th>Expediente</th>
-            <th>Fecha</th>
-            <th>Tipo</th>
-            <th>Solicitante</th>
-            <th>Señalado / Instancia</th>
-            <th>Estado</th>
+            {COLUMNS.map(col => (
+              <th
+                key={col.key}
+                onClick={() => handleSort(col)}
+                className={col.noSort ? '' : 'th-sortable'}
+                style={col.key === 'senalado' ? {} : { userSelect: 'none' }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  {col.label}
+                  <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
+                </span>
+              </th>
+            ))}
             <th style={{ textAlign: 'right' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {complaints.map((c) => (
-            <tr key={c.id}>
+          {sorted.map((c) => (
+            <tr key={c.id} className="tr-clickable" onClick={() => onView(c)}>
               <td>
                 <span className="table-id">{c.id}</span>
               </td>
@@ -65,7 +119,7 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }
                   <span style={{ color: 'var(--muted)' }}>—</span>
                 )}
               </td>
-              <td>
+              <td onClick={e => e.stopPropagation()}>
                 <select
                   value={c.estado}
                   onChange={(e) => onToggleStatus(c.id, e.target.value)}
@@ -76,7 +130,7 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }
                   <option value="Archivado">Archivado</option>
                 </select>
               </td>
-              <td>
+              <td onClick={e => e.stopPropagation()}>
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                   <button onClick={() => onView(c)} className="btn btn-ghost" style={{ padding: '6px 10px', color: 'var(--blue-mid)' }} title="Ver detalle">
                     <Eye size={14} />

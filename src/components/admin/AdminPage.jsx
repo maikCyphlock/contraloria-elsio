@@ -1,8 +1,22 @@
+import { useState } from 'react';
 import { Download, PlusCircle } from 'lucide-react';
 import SearchBox from './SearchBox';
 import ComplaintTable from './ComplaintTable';
 
+const STATUS_FILTERS = ['Todos', 'En revisión', 'Completado', 'Archivado'];
+
 function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onReport, onAdd, onEdit, onDelete, onToggleStatus, onView }) {
+  const [statusFilter, setStatusFilter] = useState('Todos');
+
+  const visible = statusFilter === 'Todos'
+    ? complaints
+    : complaints.filter(c => c.estado === statusFilter);
+
+  const hasActiveFilter = statusFilter !== 'Todos' || searchQuery;
+  const counterText = hasActiveFilter
+    ? `${visible.length} de ${complaints.length} registro${complaints.length !== 1 ? 's' : ''}`
+    : `${complaints.length} registro${complaints.length !== 1 ? 's' : ''}`;
+
   return (
     <main className="container animate-fade">
       <div className="premium-card">
@@ -10,7 +24,7 @@ function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onR
           <div>
             <h2>Panel de Control</h2>
             <p style={{ fontSize: '0.78rem', opacity: 0.7, marginTop: '2px', fontWeight: 400 }}>
-              {complaints.length} registro{complaints.length !== 1 ? 's' : ''} encontrado{complaints.length !== 1 ? 's' : ''}
+              {counterText}
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -24,9 +38,22 @@ function AdminPage({ complaints, searchQuery, onSearchChange, onClearSearch, onR
         </div>
 
         <div className="premium-card-body">
-          <SearchBox value={searchQuery} onChange={onSearchChange} onClear={onClearSearch} />
+          <div className="admin-toolbar">
+            <SearchBox value={searchQuery} onChange={onSearchChange} onClear={onClearSearch} />
+            <div className="filter-pills">
+              {STATUS_FILTERS.map(f => (
+                <button
+                  key={f}
+                  onClick={() => setStatusFilter(f)}
+                  className={`filter-pill ${statusFilter === f ? 'filter-pill--active' : ''}`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
           <ComplaintTable
-            complaints={complaints}
+            complaints={visible}
             onView={onView}
             onEdit={onEdit}
             onDelete={onDelete}
