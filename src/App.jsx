@@ -162,12 +162,9 @@ function App() {
     setCurrentView('register');
   }
 
-  async function toggleStatus(id) {
-    const complaint = complaints.find(c => c.id === id);
-    if (!complaint) return;
-    const nextState = complaint.estado === 'En revisión' ? 'Completado' : 'En revisión';
+  async function toggleStatus(id, newEstado) {
     try {
-      const updated = await patchComplaintStatus(id, nextState);
+      const updated = await patchComplaintStatus(id, newEstado);
       setComplaints(prev => prev.map(c => c.id === id ? updated : c));
       showNotification(`Estado del trámite ${id} modificado.`);
     } catch {

@@ -66,14 +66,15 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus, onView }
                 )}
               </td>
               <td>
-                <span
-                  onClick={() => onToggleStatus(c.id)}
-                  className={`badge ${c.estado === 'Completado' ? 'badge-completed' : 'badge-review'}`}
-                  style={{ cursor: 'pointer' }}
-                  title="Clic para cambiar estado"
+                <select
+                  value={c.estado}
+                  onChange={(e) => onToggleStatus(c.id, e.target.value)}
+                  className={`status-select ${c.estado === 'Completado' ? 'status-select--completed' : c.estado === 'Archivado' ? 'status-select--archived' : 'status-select--review'}`}
                 >
-                  {c.estado}
-                </span>
+                  <option value="En revisión">En revisión</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Archivado">Archivado</option>
+                </select>
               </td>
               <td>
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>

@@ -69,7 +69,7 @@ body {
   50%       { opacity: 0.4; }
 }
 
-.animate-fade { animation: fadeUp 0.45s var(--transition) forwards; }
+.animate-fade { animation: fadeUp 0.18s ease-out forwards; }
 
 /* ─── Layout ─────────────────────────────────────────── */
 .app-wrapper {
@@ -160,7 +160,7 @@ body {
 .nav-link.active {
   color: var(--white);
   background: var(--accent);
-  box-shadow: 0 2px 8px rgba(200,146,42,0.4);
+  
 }
 
 /* ─── Cards ──────────────────────────────────────────── */
@@ -501,6 +501,41 @@ input:focus, select:focus, textarea:focus {
 }
 .badge-completed::before { background: var(--success); }
 
+/* Status dropdown */
+.status-select {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 4px 24px 4px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7f96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: box-shadow var(--transition);
+  outline: none;
+}
+.status-select:focus { box-shadow: 0 0 0 2px rgba(37,99,168,0.25); }
+
+.status-select--review {
+  background-color: var(--warning-light);
+  color: var(--warning);
+  border-color: rgba(217,119,6,0.2);
+}
+.status-select--completed {
+  background-color: var(--success-light);
+  color: var(--success);
+  border-color: rgba(46,125,94,0.2);
+}
+.status-select.status-select--archived {
+  background-color: var(--light);
+  color: var(--muted);
+  border-color: var(--border);
+}
+
 /* Type tags */
 .tag {
   display: inline-block;
@@ -560,7 +595,7 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   gap: 12px;
-  animation: slideInRight 0.35s var(--transition) forwards;
+  animation: slideInRight 0.2s ease-out forwards;
   max-width: 380px;
   font-size: 0.9rem;
   color: var(--text);
