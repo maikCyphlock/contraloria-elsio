@@ -1,6 +1,24 @@
-import { Edit3, Trash2 } from 'lucide-react';
+import { Edit3, FileText, Trash2 } from 'lucide-react';
+
+const TYPE_CLASS = {
+  denuncia: 'tag-denuncia',
+  queja:    'tag-queja',
+  reclamo:  'tag-reclamo',
+  peticion: 'tag-peticion',
+};
 
 function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus }) {
+  if (complaints.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-state-icon">
+          <FileText size={28} />
+        </div>
+        <p>No se encontraron registros de solicitudes.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="table-container">
       <table className="premium-table">
@@ -10,75 +28,65 @@ function ComplaintTable({ complaints, onEdit, onDelete, onToggleStatus }) {
             <th>Fecha</th>
             <th>Tipo</th>
             <th>Solicitante</th>
-            <th>Señales / Instancia</th>
+            <th>Señalado / Instancia</th>
             <th>Estado</th>
             <th style={{ textAlign: 'right' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {complaints.length > 0 ? (
-            complaints.map((complaint) => (
-              <tr key={complaint.id}>
-                <td style={{ fontWeight: 'bold', color: 'var(--navy)' }}>{complaint.id}</td>
-                <td>{complaint.fecha}</td>
-                <td style={{ textTransform: 'capitalize' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    background: complaint.tipo_tramite === 'denuncia' ? '#fbeeee' : '#eef4fb',
-                    color: complaint.tipo_tramite === 'denuncia' ? 'var(--error)' : 'var(--blue)'
-                  }}>
-                    {complaint.tipo_tramite}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ fontWeight: 500 }}>{complaint.solicitante.nombres}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                    {complaint.solicitante.tipo_doc}-{complaint.solicitante.nro_doc}
-                  </div>
-                </td>
-                <td>
-                  {complaint.señalados && complaint.señalados[0] ? (
-                    <div>
-                      <div style={{ fontWeight: 500 }}>{complaint.señalados[0].nombre || 'N/A'}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{complaint.señalados[0].instancia || 'N/A'}</div>
+          {complaints.map((c) => (
+            <tr key={c.id}>
+              <td>
+                <span className="table-id">{c.id}</span>
+              </td>
+              <td style={{ color: 'var(--muted)', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
+                {c.fecha}
+              </td>
+              <td>
+                <span className={`tag ${TYPE_CLASS[c.tipo_tramite] ?? 'tag-queja'}`}>
+                  {c.tipo_tramite}
+                </span>
+              </td>
+              <td>
+                <div style={{ fontWeight: 500, color: 'var(--text)' }}>{c.solicitante.nombres}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '1px' }}>
+                  {c.solicitante.tipo_doc}-{c.solicitante.nro_doc}
+                </div>
+              </td>
+              <td>
+                {c.señalados?.[0] ? (
+                  <>
+                    <div style={{ fontWeight: 500 }}>{c.señalados[0].nombre || 'N/A'}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '1px' }}>
+                      {c.señalados[0].instancia || 'N/A'}
                     </div>
-                  ) : (
-                    <span style={{ color: 'var(--muted)' }}>N/A</span>
-                  )}
-                </td>
-                <td>
-                  <span
-                    onClick={() => onToggleStatus(complaint.id)}
-                    className={`badge ${complaint.estado === 'Completado' ? 'badge-completed' : 'badge-review'}`}
-                    style={{ cursor: 'pointer' }}
-                    title="Haz clic para alternar estado rápidamente"
-                  >
-                    {complaint.estado}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                    <button onClick={() => onEdit(complaint)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Editar">
-                      <Edit3 size={14} />
-                    </button>
-                    <button onClick={() => onDelete(complaint.id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Eliminar">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: 'var(--muted)' }}>
-                No se encontraron registros de solicitudes.
+                  </>
+                ) : (
+                  <span style={{ color: 'var(--muted)' }}>—</span>
+                )}
+              </td>
+              <td>
+                <span
+                  onClick={() => onToggleStatus(c.id)}
+                  className={`badge ${c.estado === 'Completado' ? 'badge-completed' : 'badge-review'}`}
+                  style={{ cursor: 'pointer' }}
+                  title="Clic para cambiar estado"
+                >
+                  {c.estado}
+                </span>
+              </td>
+              <td>
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                  <button onClick={() => onEdit(c)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Editar">
+                    <Edit3 size={14} />
+                  </button>
+                  <button onClick={() => onDelete(c.id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Eliminar">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
     </div>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { getComplaints, saveComplaints } from './data/mockData';
+import { useState, useEffect } from 'react';
+import { getComplaints, createComplaint, updateComplaint, patchComplaintStatus, deleteComplaint } from './data/api';
 import AdminPage from './components/admin/AdminPage';
 import ComplaintFormPage from './components/form/ComplaintFormPage';
 import Footer from './components/layout/Footer';
@@ -10,13 +10,16 @@ import ReportPage from './components/report/ReportPage';
 import { EMPTY_SENALADO, getEmptyForm } from './utils/formDefaults';
 
 function App() {
-  const [complaints, setComplaints] = useState(() => getComplaints());
+  const [complaints, setComplaints] = useState([]);
   const [currentView, setCurrentView] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingComplaint, setEditingComplaint] = useState(null);
   const [notification, setNotification] = useState(null);
   const [form, setForm] = useState(getEmptyForm());
 
+  useEffect(() => {
+    getComplaints().then(setComplaints).catch(() => showNotification('Error cargando datos desde la base de datos.'));
+  }, []);
 
   function showNotification(message) {
     setNotification(message);
@@ -28,20 +31,9 @@ function App() {
     setEditingComplaint(null);
   }
 
-  function goHome() {
-    resetForm();
-    setCurrentView('home');
-  }
-
-  function goRegister() {
-    resetForm();
-    setCurrentView('register');
-  }
-
-  function goAdmin() {
-    resetForm();
-    setCurrentView('admin');
-  }
+  function goHome() { resetForm(); setCurrentView('home'); }
+  function goRegister() { resetForm(); setCurrentView('register'); }
+  function goAdmin() { resetForm(); setCurrentView('admin'); }
 
   function cancelForm() {
     const nextView = editingComplaint ? 'admin' : 'home';
@@ -49,50 +41,20 @@ function App() {
     setCurrentView(nextView);
   }
 
-  function updateFormField(field, value) {
-    setForm({ ...form, [field]: value });
-  }
+  function updateFormField(field, value) { setForm({ ...form, [field]: value }); }
+  function updateSolicitanteField(field, value) { setForm({ ...form, solicitante: { ...form.solicitante, [field]: value } }); }
+  function updateProyectoField(field, value) { setForm({ ...form, proyecto: { ...form.proyecto, [field]: value } }); }
 
-  function updateSolicitanteField(field, value) {
-    setForm({
-      ...form,
-      solicitante: { ...form.solicitante, [field]: value }
-    });
-  }
-
-  function updateProyectoField(field, value) {
-    setForm({
-      ...form,
-      proyecto: { ...form.proyecto, [field]: value }
-    });
-  }
-
-  function addSenalRow() {
-    setForm({
-      ...form,
-      senales: [...form.senales, { ...EMPTY_SENALADO }]
-    });
-  }
+  function addSenalRow() { setForm({ ...form, senales: [...form.senales, { ...EMPTY_SENALADO }] }); }
 
   function updateSenalRow(index, field, value) {
-    const updatedSenales = form.senales.map((row, rowIndex) => {
-      if (rowIndex === index) {
-        return { ...row, [field]: value };
-      }
-
-      return row;
-    });
-
+    const updatedSenales = form.senales.map((row, i) => i === index ? { ...row, [field]: value } : row);
     setForm({ ...form, senales: updatedSenales });
   }
 
   function removeSenalRow(index) {
-    if (form.senales.length === 1) {
-      return;
-    }
-
-    const updatedSenales = form.senales.filter((row, rowIndex) => rowIndex !== index);
-    setForm({ ...form, senales: updatedSenales });
+    if (form.senales.length === 1) return;
+    setForm({ ...form, senales: form.senales.filter((_, i) => i !== index) });
   }
 
   function buildComplaintData() {
@@ -122,7 +84,7 @@ function App() {
     };
   }
 
-  function saveForm(event) {
+  async function saveForm(event) {
     event.preventDefault();
 
     if (!form.solicitante.docNum || !form.solicitante.name || !form.solicitante.email || !form.narracion) {
@@ -131,45 +93,43 @@ function App() {
     }
 
     const complaintData = buildComplaintData();
-    let updatedComplaints;
 
-    if (editingComplaint) {
-      updatedComplaints = complaints.map((complaint) => {
-        if (complaint.id === editingComplaint.id) {
-          return { ...complaint, ...complaintData, estado: editingComplaint.estado };
-        }
-
-        return complaint;
-      });
-      showNotification(`Trámite ${editingComplaint.id} actualizado con éxito.`);
-    } else {
-      const nextId = `OAC-2026-${String(complaints.length + 1).padStart(4, '0')}`;
-      const newComplaint = {
-        id: nextId,
-        ...complaintData,
-        fecha: new Date().toISOString().split('T')[0],
-        estado: 'En revisión'
-      };
-
-      updatedComplaints = [...complaints, newComplaint];
-      showNotification(`Trámite registrado con éxito. Expediente: ${nextId}`);
+    try {
+      if (editingComplaint) {
+        const updated = await updateComplaint(editingComplaint.id, {
+          ...complaintData,
+          estado: editingComplaint.estado,
+          fecha: editingComplaint.fecha
+        });
+        setComplaints(prev => prev.map(c => c.id === editingComplaint.id ? updated : c));
+        showNotification(`Trámite ${editingComplaint.id} actualizado con éxito.`);
+      } else {
+        const created = await createComplaint({
+          ...complaintData,
+          fecha: new Date().toISOString().split('T')[0],
+          estado: 'En revisión'
+        });
+        setComplaints(prev => [...prev, created]);
+        showNotification(`Trámite registrado con éxito. Expediente: ${created.id}`);
+      }
+    } catch {
+      showNotification('Error guardando el trámite. Intente nuevamente.');
+      return;
     }
 
-    setComplaints(updatedComplaints);
-    saveComplaints(updatedComplaints);
     resetForm();
     setCurrentView('admin');
   }
 
-  function deleteComplaint(id) {
-    if (!window.confirm(`¿Está seguro de que desea eliminar el trámite ${id}?`)) {
-      return;
+  async function handleDeleteComplaint(id) {
+    if (!window.confirm(`¿Está seguro de que desea eliminar el trámite ${id}?`)) return;
+    try {
+      await deleteComplaint(id);
+      setComplaints(prev => prev.filter(c => c.id !== id));
+      showNotification(`Trámite ${id} eliminado correctamente.`);
+    } catch {
+      showNotification('Error eliminando el trámite.');
     }
-
-    const updatedComplaints = complaints.filter((complaint) => complaint.id !== id);
-    setComplaints(updatedComplaints);
-    saveComplaints(updatedComplaints);
-    showNotification(`Trámite ${id} eliminado correctamente.`);
   }
 
   function startEdit(complaint) {
@@ -189,7 +149,7 @@ function App() {
         phone: complaint.solicitante.tel_cel,
         address: complaint.solicitante.direccion
       },
-      senales: complaint.señalados && complaint.señalados.length > 0 ? complaint.señalados : [{ ...EMPTY_SENALADO }],
+      senales: complaint.señalados?.length > 0 ? complaint.señalados : [{ ...EMPTY_SENALADO }],
       proyecto: {
         name: complaint.proyecto?.nombre_proyecto || '',
         date: complaint.proyecto?.fecha_aprobacion || '',
@@ -200,32 +160,30 @@ function App() {
     setCurrentView('register');
   }
 
-  function toggleStatus(id) {
-    const updatedComplaints = complaints.map((complaint) => {
-      if (complaint.id === id) {
-        const nextState = complaint.estado === 'En revisión' ? 'Completado' : 'En revisión';
-        return { ...complaint, estado: nextState };
-      }
-
-      return complaint;
-    });
-
-    setComplaints(updatedComplaints);
-    saveComplaints(updatedComplaints);
-    showNotification(`Estado del trámite ${id} modificado.`);
+  async function toggleStatus(id) {
+    const complaint = complaints.find(c => c.id === id);
+    if (!complaint) return;
+    const nextState = complaint.estado === 'En revisión' ? 'Completado' : 'En revisión';
+    try {
+      const updated = await patchComplaintStatus(id, nextState);
+      setComplaints(prev => prev.map(c => c.id === id ? updated : c));
+      showNotification(`Estado del trámite ${id} modificado.`);
+    } catch {
+      showNotification('Error actualizando el estado.');
+    }
   }
 
   const filteredComplaints = complaints.filter((complaint) => {
     const query = searchQuery.toLowerCase();
-    const idMatches = complaint.id.toLowerCase().includes(query);
-    const nameMatches = complaint.solicitante.nombres.toLowerCase().includes(query);
-    const documentMatches = complaint.solicitante.nro_doc.includes(searchQuery);
-
-    return idMatches || nameMatches || documentMatches;
+    return (
+      complaint.id.toLowerCase().includes(query) ||
+      complaint.solicitante.nombres.toLowerCase().includes(query) ||
+      complaint.solicitante.nro_doc.includes(searchQuery)
+    );
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f4f7fb]">
+    <div className="app-wrapper">
       <Notification message={notification} />
 
       <Header
@@ -264,7 +222,7 @@ function App() {
           onReport={() => setCurrentView('report')}
           onAdd={goRegister}
           onEdit={startEdit}
-          onDelete={deleteComplaint}
+          onDelete={handleDeleteComplaint}
           onToggleStatus={toggleStatus}
         />
       )}

@@ -1,270 +1,151 @@
-# Sistema de Denuncias - Contraloría del Municipio Páez
+# Sistema de Control y Recepción de Denuncias — Contraloría del Municipio Páez
 
-Aplicación web para registrar, consultar y administrar denuncias, quejas, reclamos y peticiones de la Oficina de Atención al Ciudadano (OAC) de la Contraloría del Municipio Páez.
+Este proyecto es una aplicación web moderna e interactiva desarrollada en **React (con Vite)** para la **Oficina de Atención al Ciudadano (OAC)** de la Contraloría del Municipio Páez (Acarigua, Estado Portuguesa, Venezuela).
 
-El proyecto está hecho con **React + Vite** y fue refactorizado en componentes pequeños para que sea fácil de entender, mantener y modificar por desarrolladores junior.
-
----
-
-## Funcionalidades principales
-
-- Página de inicio con resumen de trámites.
-- Registro de nuevas solicitudes o denuncias.
-- Edición de trámites existentes.
-- Eliminación de registros.
-- Búsqueda por expediente, solicitante o documento.
-- Cambio rápido de estado entre:
-  - `En revisión`
-  - `Completado`
-- Reporte general imprimible o exportable como PDF desde el navegador.
-- Persistencia local usando `localStorage` mediante datos mock.
+El objetivo principal del sistema es digitalizar, validar y gestionar de forma transparente y eficiente los trámites de denuncias, quejas, reclamos y peticiones presentados por los ciudadanos.
 
 ---
 
-## Tecnologías usadas
+## 📋 ¿De qué trata el proyecto?
 
-- React
-- Vite
-- JavaScript
-- CSS
-- lucide-react para íconos
-- ESLint
+El sistema actúa como puente de comunicación y control gubernamental entre los ciudadanos y el órgano contralor municipal. Permite la captación formal de solicitudes civiles y dota a la contraloría de un panel administrativo para procesar y auditar dichos expedientes.
 
----
-
-## Instalación
-
-1. Clonar o descargar el proyecto.
-
-2. Entrar a la carpeta del proyecto:
-
-```bash
-cd "Contraloria Pagina Denuncia/Homepage"
-```
-
-3. Instalar dependencias:
-
-```bash
-npm install
-```
-
-4. Ejecutar en modo desarrollo:
-
-```bash
-npm run dev
-```
-
-5. Abrir en el navegador la URL que indique Vite, normalmente:
-
-```text
-http://localhost:5173
-```
+### Características Principales:
+1. **Clasificación del Trámite:** Diferenciación clara entre *Denuncia* (irregularidades en el uso de recursos públicos), *Queja* (mala prestación de servicios), *Reclamo* (incumplimiento institucional) y *Petición* (solicitudes de información).
+2. **Seguimiento a la Consulta Popular Nacional:** Sección integrada especializada para registrar irregularidades en los proyectos comunitarios aprobados por las asambleas de ciudadanos y financiados por el Estado.
+3. **Formulario Ciudadano Validado:** Captación exhaustiva de datos del solicitante (identidad, contacto, ubicación) y datos geográficos e identitarios de los entes o personas señaladas.
+4. **Panel de Control Administrativo (CRUD):**
+   - **Visualización (Read):** Lista completa de expedientes con búsqueda inteligente.
+   - **Creación Manual (Create):** Permite a los funcionarios ingresar denuncias recibidas de forma presencial.
+   - **Edición y Cambio de Estado (Update):** Control del flujo del trámite (alternar entre "En revisión" y "Completado").
+   - **Eliminación (Delete):** Borrado físico de expedientes bajo confirmación.
+5. **Reporte General (Sin Filtros):** Generación instantánea de una sábana de datos formal en formato apto para impresión física o guardado en PDF de **todos** los registros del sistema sin aplicar ningún filtro restrictivo de búsqueda.
 
 ---
 
-## Comandos disponibles
+## 🛠️ Estructura del Código y Tecnologías
 
-```bash
-npm run dev
-```
+### Stack Tecnológico:
+- **Core:** React 19 + Vite (Rápido tiempo de respuesta y recarga en caliente).
+- **Iconografía:** `lucide-react` para elementos visuales modernos.
+- **Estilos:** CSS3 nativo (`src/index.css`) con variables centralizadas y diseño responsivo para móviles y computadoras.
+- **Persistencia:** API `LocalStorage` del navegador (los datos persisten de manera local tras recargar la página).
 
-Inicia el servidor de desarrollo.
-
-```bash
-npm run build
-```
-
-Genera la versión de producción en la carpeta `dist`.
-
-```bash
-npm run preview
-```
-
-Permite previsualizar la versión generada para producción.
-
-```bash
-npm run lint
-```
-
-Ejecuta ESLint para revisar errores de código.
+### Arquitectura de Archivos en `src/`:
+* **`data/mockData.js`:** Actúa como la capa de acceso a datos (simulación de base de datos). Inicializa el sistema con datos semilla estructurados y maneja las lecturas y escrituras de LocalStorage de forma síncrona.
+* **`index.css`:** Contiene el sistema de diseño visual (paleta de colores azul marino/dorado oficial, tipografías, botones adaptables, sombras premium y el formato especial de impresión para reportes).
+* **`App.jsx`:** Componente raíz que maneja el enrutamiento interno mediante estados, la validación interactiva de datos y el flujo CRUD de expedientes.
 
 ---
 
-## Estructura del proyecto
+## 🚀 Cómo Ejecutar el Proyecto
 
-```text
-src/
-├── App.jsx
-├── App.css
-├── index.css
-├── main.jsx
-├── assets/
-├── data/
-│   └── mockData.js
-├── utils/
-│   └── formDefaults.js
-└── components/
-    ├── admin/
-    │   ├── AdminPage.jsx
-    │   ├── ComplaintTable.jsx
-    │   └── SearchBox.jsx
-    ├── form/
-    │   ├── ApplicantSection.jsx
-    │   ├── ClassificationSection.jsx
-    │   ├── ComplaintFormPage.jsx
-    │   ├── FormSection.jsx
-    │   ├── InvolvedSection.jsx
-    │   ├── NarrationSection.jsx
-    │   └── ProjectSection.jsx
-    ├── home/
-    │   ├── HomePage.jsx
-    │   └── MetricCard.jsx
-    ├── layout/
-    │   ├── Footer.jsx
-    │   ├── Header.jsx
-    │   └── Notification.jsx
-    └── report/
-        └── ReportPage.jsx
-```
+1. Asegúrate de tener instalado [Node.js](https://nodejs.org/).
+2. Abre una terminal en la carpeta del proyecto e instala las dependencias:
+   ```bash
+   cd Homepage
+   npm install
+   ```
+3. Ejecuta el servidor de desarrollo local:
+   ```bash
+   npm run dev
+   ```
+4. Abre en tu navegador la dirección indicada en la terminal (usualmente `http://localhost:5173`).
 
 ---
 
-## Explicación simple de carpetas
+## 🔑 Explicación del Código Clave (Para Exámenes de Programación)
 
-### `src/App.jsx`
+A continuación se analizan los fragmentos de código más importantes y su justificación técnica:
 
-Archivo principal de la aplicación.
+### 1. Enrutamiento Interno sin Librerías (State-Based Routing)
+En lugar de usar `React Router`, la navegación entre las secciones del portal se controla reactivamente usando un estado simple en `App.jsx`:
 
-Aquí se maneja:
+```javascript
+const [currentView, setCurrentView] = useState('home'); // home, register, admin, report
+```
 
-- La vista actual: inicio, formulario, admin o reporte.
-- La lista de trámites.
-- Crear, editar y eliminar registros.
-- Guardar datos en `localStorage`.
-- Mostrar notificaciones.
-
-### `src/components/layout`
-
-Componentes comunes de la página:
-
-- `Header.jsx`: menú superior.
-- `Footer.jsx`: pie de página.
-- `Notification.jsx`: mensaje flotante de éxito.
-
-### `src/components/home`
-
-Componentes de la pantalla inicial:
-
-- `HomePage.jsx`: portada principal.
-- `MetricCard.jsx`: tarjetas con métricas.
-
-### `src/components/admin`
-
-Componentes del panel administrativo:
-
-- `AdminPage.jsx`: pantalla principal del panel.
-- `SearchBox.jsx`: campo de búsqueda.
-- `ComplaintTable.jsx`: tabla de trámites.
-
-### `src/components/form`
-
-Componentes del formulario de denuncia:
-
-- `ComplaintFormPage.jsx`: formulario completo.
-- `ClassificationSection.jsx`: tipo de trámite.
-- `ApplicantSection.jsx`: datos del solicitante.
-- `InvolvedSection.jsx`: datos del señalado o involucrado.
-- `ProjectSection.jsx`: datos de consulta popular.
-- `NarrationSection.jsx`: narración de hechos.
-- `FormSection.jsx`: componente reutilizable para secciones.
-
-### `src/components/report`
-
-Componentes del reporte:
-
-- `ReportPage.jsx`: reporte general imprimible.
-
-### `src/data/mockData.js`
-
-Contiene funciones para leer y guardar trámites usando datos locales.
-
-### `src/utils/formDefaults.js`
-
-Contiene los valores iniciales del formulario.
+**Uso en el JSX:**
+```jsx
+{currentView === 'home' && <HomeView />}
+{currentView === 'register' && <FormularioView />}
+{currentView === 'admin' && <AdminDashboard />}
+{currentView === 'report' && <ReporteGeneral />}
+```
+* **Por qué es importante:** Demuestra cómo React reconstruye el DOM Virtual de forma dinámica dependiendo de la evaluación de expresiones lógicas en el renderizado.
 
 ---
 
-## Flujo básico de uso
+### 2. Guardado y Carga con LocalStorage (Persistencia)
+En `src/data/mockData.js`, la aplicación interactúa con la memoria del navegador.
 
-1. Entrar a la página de inicio.
-2. Presionar **Registrar Solicitud / Denuncia**.
-3. Completar los datos obligatorios.
-4. Guardar el trámite.
-5. Revisar el registro en el **Panel Admin**.
-6. Editar, eliminar o cambiar estado si es necesario.
-7. Generar reporte desde el panel administrativo.
+```javascript
+export const getComplaints = () => {
+  const data = localStorage.getItem("contraloria_complaints");
+  if (!data) {
+    localStorage.setItem("contraloria_complaints", JSON.stringify(initialComplaints));
+    return initialComplaints;
+  }
+  return JSON.parse(data);
+};
+```
+* **Concepto técnico:** 
+  * `localStorage.getItem` y `setItem` solo manejan texto plano.
+  * `JSON.stringify(objeto)` convierte una estructura compleja de JavaScript a una cadena de texto (JSON) para guardarla.
+  * `JSON.parse(texto)` realiza el proceso inverso, convirtiendo el texto de vuelta a un objeto/arreglo manipulable por React.
 
 ---
 
-## Notas para desarrolladores junior
+### 3. Operación de Actualización (Update en CRUD)
+Para actualizar los datos de una denuncia editada sin duplicarla en la base de datos:
 
-- Cada componente tiene una responsabilidad pequeña.
-- Los componentes reciben datos mediante `props`.
-- La lógica principal está centralizada en `App.jsx`.
-- Evitar agregar demasiada lógica dentro de los componentes visuales.
-- Si una sección crece mucho, crear un nuevo componente dentro de la carpeta correspondiente.
+```javascript
+const handleSave = (e) => {
+  e.preventDefault();
+  // ... validaciones ...
 
-Ejemplo:
+  let updatedComplaints;
 
-```text
-Si se agrega una nueva sección al formulario,
-crear un archivo nuevo en:
+  if (editingComplaint) {
+    // Modo Edición: Se mapea el arreglo y se sustituye el modificado
+    updatedComplaints = complaints.map(c => 
+      c.id === editingComplaint.id 
+        ? { ...c, ...complaintData, estado: editingComplaint.estado } 
+        : c
+    );
+  } else {
+    // Modo Registro: Se crea un ID nuevo y se agrega al final del arreglo
+    const nextId = `OAC-2026-${String(complaints.length + 1).padStart(4, '0')}`;
+    const newRecord = { id: nextId, ...complaintData, fecha: "2026-06-12", estado: "En revisión" };
+    updatedComplaints = [...complaints, newRecord];
+  }
 
-src/components/form/NuevaSeccion.jsx
+  setComplaints(updatedComplaints);
+  saveComplaints(updatedComplaints);
+};
 ```
+* **Concepto técnico:** 
+  * Se usa `.map()` porque es un método inmutable (retorna un nuevo arreglo en lugar de modificar el original, respetando el principio de inmutabilidad de React).
+  * El operador spread `{...c, ...complaintData}` copia todas las propiedades anteriores del registro y sobrescribe únicamente las que han cambiado.
 
 ---
 
-## Datos y persistencia
+### 4. Tabla de Entradas Dinámicas (Arreglo en Estado)
+Para que el usuario agregue dinámicamente filas de personas señaladas (involucrados):
 
-Actualmente la aplicación usa `localStorage`, por lo que los datos quedan guardados en el navegador del usuario.
+```javascript
+const [senales, setSenales] = useState([{ cedula: '', nombre: '', instancia: '', situr: '', rif: '' }]);
 
-Esto significa que:
+const addSenalRow = () => {
+  setSenales([...senales, { cedula: '', nombre: '', instancia: '', situr: '', rif: '' }]);
+};
 
-- No hay backend real todavía.
-- Los datos no se comparten entre computadoras.
-- Si se limpia el almacenamiento del navegador, los datos pueden perderse.
-
----
-
-## Build de producción
-
-Para generar los archivos finales:
-
-```bash
-npm run build
+const updateSenalRow = (index, field, value) => {
+  const updated = senales.map((row, idx) => 
+    idx === index ? { ...row, [field]: value } : row
+  );
+  setSenales(updated);
+};
 ```
+* **Concepto técnico:** Cada vez que cambia un input dentro de la celda de la tabla, `updateSenalRow` localiza la fila exacta usando su índice `index`, realiza una copia del objeto de esa fila y le asigna el nuevo valor de forma reactiva.
 
-El resultado queda en:
-
-```text
-dist/
-```
-
-Esa carpeta puede ser desplegada en un servidor estático.
-
----
-
-## Estado actual
-
-El proyecto compila correctamente con:
-
-```bash
-npm run build
-```
-
-Y pasa la revisión de código con:
-
-```bash
-npm run lint
-```
