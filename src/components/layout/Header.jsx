@@ -15,7 +15,7 @@ function Header({ currentView, editingComplaint, onGoHome, onGoRegister, onGoAdm
         <button
           onClick={onGoHome}
           className={`btn nav-link ${currentView === 'home' ? 'active' : ''}`}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+          style={{  border: 'none', cursor: 'pointer' }}
         >
           <Home size={16} /> Inicio
         </button>
@@ -23,7 +23,7 @@ function Header({ currentView, editingComplaint, onGoHome, onGoRegister, onGoAdm
         <button
           onClick={onGoRegister}
           className={`btn nav-link ${currentView === 'register' && !editingComplaint ? 'active' : ''}`}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+          style={{  border: 'none', cursor: 'pointer' }}
         >
           <PlusCircle size={16} /> Nueva Denuncia
         </button>
@@ -31,7 +31,7 @@ function Header({ currentView, editingComplaint, onGoHome, onGoRegister, onGoAdm
         <button
           onClick={onGoAdmin}
           className={`btn nav-link ${currentView === 'admin' ? 'active' : ''}`}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+          style={{  border: 'none', cursor: 'pointer' }}
         >
           <Users size={16} /> Panel Admin
         </button>
